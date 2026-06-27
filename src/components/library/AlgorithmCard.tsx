@@ -69,7 +69,17 @@ export function AlgorithmCard({ algorithm, viewMode, mask, status = 'none', drag
           <code className="block text-sm md:text-base font-mono text-muted-foreground break-all leading-relaxed">
             {formatNotation(algorithm.notation)}
           </code>
-          <div className="text-xs text-muted-foreground">{countMoves(algorithm.notation)} moves</div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-xs text-muted-foreground">{countMoves(algorithm.notation)} moves</span>
+            {algorithm.setup && (
+              <span
+                className="inline-flex items-center gap-0.5 text-[10px] px-1 py-0.5 bg-muted rounded text-muted-foreground cursor-help"
+                title={`Setup: ${algorithm.setup}`}
+              >
+                ⚙ Setup
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-1.5 shrink-0">
           <span

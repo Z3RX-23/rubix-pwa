@@ -28,6 +28,7 @@ export interface Algorithm {
   stepId: string
   name: string
   notation: string
+  setup?: string
   altNotations?: string[]
   triggers?: string[]
   arrows?: ArrowData[]

@@ -23,3 +23,5 @@ ALTER TABLE collections ADD COLUMN IF NOT EXISTS synced_at TIMESTAMPTZ DEFAULT N
 
 -- Remove FK constraint on algorithms.step_id — steps are managed client-side and not seeded in Supabase
 ALTER TABLE algorithms DROP CONSTRAINT IF EXISTS algorithms_step_id_fkey;
+
+ALTER TABLE algorithms ADD COLUMN IF NOT EXISTS setup TEXT;

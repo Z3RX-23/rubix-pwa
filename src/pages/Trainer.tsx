@@ -301,9 +301,17 @@ export function Trainer() {
             {currentAlg && (
               <div className="bg-card rounded-xl p-3 border">
                 <div className="flex items-center gap-4">
-                  <AlgorithmCube alg={currentAlg.notation} size={80} view={algView} mask={mask} arrows={currentAlg.arrows} />
+                  <AlgorithmCube alg={currentAlg.notation} setup={currentAlg.setup} size={80} view={algView} mask={mask} arrows={currentAlg.arrows} />
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm truncate">{currentAlg.name}</div>
+                    {currentAlg.setup && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[10px] text-muted-foreground">Setup:</span>
+                        <code className="text-[11px] font-mono text-muted-foreground bg-muted px-1 py-0.5 rounded">
+                          {currentAlg.setup}
+                        </code>
+                      </div>
+                    )}
                     <div className="text-xs text-muted-foreground mt-0.5">{countMoves(currentAlg.notation)} moves</div>
                     {supports3d && (
                       <div className="flex gap-1 mt-1">

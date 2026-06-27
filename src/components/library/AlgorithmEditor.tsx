@@ -15,6 +15,7 @@ interface AlgorithmEditorProps {
 export function AlgorithmEditor({ algorithm, stepId: initialStepId, steps, mask, onSave, onDelete, onClose }: AlgorithmEditorProps) {
   const [name, setName] = useState(algorithm?.name || '')
   const [notation, setNotation] = useState(algorithm?.notation || '')
+  const [setup, setSetup] = useState(algorithm?.setup || '')
   const [altNotations, setAltNotations] = useState(algorithm?.altNotations?.join('\n') || '')
   const [stepId, setStepId] = useState(algorithm?.stepId || initialStepId || '')
   const [view3d, setView3d] = useState(false)
@@ -34,6 +35,7 @@ export function AlgorithmEditor({ algorithm, stepId: initialStepId, steps, mask,
       stepId,
       name: name.trim(),
       notation: notation.trim(),
+      setup: setup.trim() || undefined,
       altNotations: altNotations ? altNotations.split('\n').map(s => s.trim()).filter(Boolean) : [],
       updatedAt: Date.now()
     })
@@ -102,6 +104,17 @@ export function AlgorithmEditor({ algorithm, stepId: initialStepId, steps, mask,
             onChange={e => { setNotation(e.target.value); setError(null) }}
             className="w-full px-3 py-2 bg-muted/50 border rounded-lg text-sm font-mono"
             placeholder="R U R' U' R' F R2 U' R' U' R U R' F'"
+          />
+        </div>
+
+        <div>
+          <label className="text-xs text-muted-foreground">Setup (pre-moves)</label>
+          <input
+            type="text"
+            value={setup}
+            onChange={e => setSetup(e.target.value)}
+            className="w-full px-3 py-2 bg-muted/50 border rounded-lg text-sm font-mono"
+            placeholder="Deixa vazio para auto-inverso (OLL/PLL)"
           />
         </div>
 

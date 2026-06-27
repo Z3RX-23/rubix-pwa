@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function arrowToString(a: { s1: { face: number; n: number }; s2: { face: number; n: number }; color?: string; scale?: number }) {
   const faceNames = ['U', 'R', 'F', 'D', 'L', 'B']
@@ -10,9 +10,21 @@ function stripRotations(alg: string): string {
   return alg.split(/\s+/).filter(m => !/^[xyz]/.test(m)).join(' ')
 }
 
-export function AlgorithmCube({ alg, size = 150, showCase = true, view = 'plan', mask, arrows }: { alg: string; size?: number; showCase?: boolean; view?: 'plan' | '3d'; mask?: string; arrows?: { s1: { face: number; n: number }; s2: { face: number; n: number }; color?: string; scale?: number }[] }) {
+interface AlgorithmCubeProps {
+  alg: string
+  setup?: string
+  size?: number
+  showCase?: boolean
+  view?: 'plan' | '3d'
+  mask?: string
+  arrows?: { s1: { face: number; n: number }; s2: { face: number; n: number }; color?: string; scale?: number }[]
+}
+
+export function AlgorithmCube({ alg, setup, size = 150, showCase = true, view = 'plan', mask, arrows }: AlgorithmCubeProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const arrowsKey = arrows ? JSON.stringify(arrows) : ''
+  const [showSetup, setShowSetup] = useState(false)
+  const hasSetup = !!setup
 
   useEffect(() => {
     const container = containerRef.current
@@ -27,28 +39,46 @@ export function AlgorithmCube({ alg, size = 150, showCase = true, view = 'plan',
 
         const arrowsStr = (arrows ?? []).map(arrowToString).join(',')
 
-        const caseAlg = showCase ? stripRotations(alg) : undefined
-
-        mod.default.cubeSVG(container, {
-          ...(view === 'plan' ? { view: 'plan', dist: 5 } : { dist: 3 }),
-          case: caseAlg,
-          algorithm: showCase ? undefined : alg,
-          ...(mask === 'oll' ? { mask: mod.default.Masking.OLL } : {}),
-          backgroundColor: 'transparent',
-          arrows: arrowsStr,
-        })
+        if (showSetup && setup) {
+          mod.default.cubeSVG(container, {
+            ...(view === 'plan' ? { view: 'plan', dist: 5 } : { dist: 3 }),
+            case: stripRotations(setup),
+            backgroundColor: 'transparent',
+            arrows: arrowsStr,
+          })
+        } else {
+          const caseAlg = showCase ? stripRotations(alg) : undefined
+          mod.default.cubeSVG(container, {
+            ...(view === 'plan' ? { view: 'plan', dist: 5 } : { dist: 3 }),
+            case: caseAlg,
+            algorithm: showCase ? undefined : alg,
+            ...(mask === 'oll' ? { mask: mod.default.Masking.OLL } : {}),
+            backgroundColor: 'transparent',
+            arrows: arrowsStr,
+          })
+        }
       } catch {
         container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;font-size:11px;color:#666;">Cube error</div>`
       }
     })()
 
     return () => { cancelled = true }
-  }, [alg, size, showCase, view, mask, arrowsKey])
+  }, [alg, setup, size, showCase, view, mask, arrowsKey, showSetup])
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    />
+    <div className="flex flex-col items-center gap-1">
+      <div
+        ref={containerRef}
+        style={{ width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      />
+      {hasSetup && (
+        <button
+          onClick={() => setShowSetup(s => !s)}
+          className="text-[10px] px-1.5 py-0.5 rounded border hover:bg-accent transition-colors text-muted-foreground"
+        >
+          {showSetup ? 'Show Solution' : 'Show Setup'}
+        </button>
+      )}
+    </div>
   )
 }

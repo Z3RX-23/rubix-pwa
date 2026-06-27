@@ -68,21 +68,30 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     try {
       const count = await db.methods.count()
 
-      // Update existing algorithms with arrows if missing
+      // Update existing algorithms with arrows/setup if missing
       if (count > 0) {
         let updated = false
         for (const alg of cfopSeed.algorithms) {
-          if (!alg.arrows) continue
           const existing = await db.algorithms.where({ stepId: alg.stepId, name: alg.name }).first()
-          if (existing && !existing.arrows) {
-            existing.arrows = alg.arrows
-            existing.updatedAt = Date.now()
-            await db.algorithms.put(existing)
-            updated = true
+          if (existing) {
+            let changed = false
+            if (alg.arrows && !existing.arrows) {
+              existing.arrows = alg.arrows
+              changed = true
+            }
+            if (alg.setup && !existing.setup) {
+              existing.setup = alg.setup
+              changed = true
+            }
+            if (changed) {
+              existing.updatedAt = Date.now()
+              await db.algorithms.put(existing)
+              updated = true
+            }
           }
         }
         if (updated) {
-          console.log('[LibraryStore] Arrows updated for existing algorithms')
+          console.log('[LibraryStore] Arrows/setup updated for existing algorithms')
           const { selectedStep } = get()
           if (selectedStep) get().loadAlgorithms(selectedStep)
         }
